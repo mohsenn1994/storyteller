@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Story Pack",
+  "type": "object",
+  "required": [
+    "pack_id",
+    "title",
+    "pages",
+    "source",
+    "created_at"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "story_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "pages": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "anyOf": [
+          {
+            "type": "object",
+            "required": [
+              "type",
+              "headline",
+              "image"
+            ],
+            "additionalProperties": true,
+            "properties": {
+              "type": {
+                "const": "cover"
+              },
+              "headline": {
+                "type": "string"
+              },
+              "subheadline": {
+                "type": "string"
+              },
+              "image": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "type",
+              "minute",
+              "headline",
+              "caption"
+            ],
+            "additionalProperties": true,
+            "properties": {
+              "type": {
+                "const": "highlight"
+              },
+              "minute": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 130
+              },
+              "headline": {
+                "type": "string"
+              },
+              "caption": {
+                "type": "string"
+              },
+              "image": {
+                "type": "string"
+              },
+              "explanation": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": [
+              "type",
+              "headline"
+            ],
+            "additionalProperties": true,
+            "properties": {
+              "type": {
+                "const": "info"
+              },
+              "headline": {
+                "type": "string"
+              },
+              "body": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}
