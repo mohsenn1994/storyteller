@@ -87,6 +87,25 @@ function collapseMirrorPairs(events: MatchEvent[]): MatchEvent[] {
   return [...passthrough, ...byInstant.values()];
 }
 
+// Multiple saves in the same minute are usually one chaotic sequence, not two
+// distinct story moments. Keep only the first (by order) per minute.
+const DEDUPE_BY_MINUTE = new Set(['attempt saved']);
+
+function collapseByMinute(events: MatchEvent[]): MatchEvent[] {
+  const seen = new Map<string, MatchEvent>();
+  const passthrough: MatchEvent[] = [];
+  for (const e of events) {
+    if (DEDUPE_BY_MINUTE.has(e.type)) {
+      const key = `${e.type}:${e.minute}`;
+      const existing = seen.get(key);
+      if (!existing || e.order < existing.order) seen.set(key, e);
+    } else {
+      passthrough.push(e);
+    }
+  }
+  return [...passthrough, ...seen.values()];
+}
+
 export interface RankOptions {
   /** Maximum number of highlight pages (excludes cover + info). */
   maxHighlights: number;
@@ -108,7 +127,7 @@ export function selectHighlights(
   events: MatchEvent[],
   opts: RankOptions,
 ): MatchEvent[] {
-  const candidates = collapseMirrorPairs(events).filter((e) => weightOf(e) > 0);
+  const candidates = collapseByMinute(collapseMirrorPairs(events)).filter((e) => weightOf(e) > 0);
 
   const goals = candidates.filter(isGoal);
   const rest = candidates
