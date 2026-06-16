@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Match Story — Preview</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #0b0f0e;
+        --panel: #14110f;
+        --grass: #2bd15b;
+        --gold: #f2c14e;
+        --floodlight: #f6f4ee;
+        --chalk: rgba(246, 244, 238, 0.62);
+        --frame-w: 460px;
+        --frame-h: 880px;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body { height: 100%; }
+      body {
+        background:
+          radial-gradient(120% 80% at 50% -10%, #1d2a22 0%, var(--ink) 55%) fixed;
+        color: var(--floodlight);
+        font-family: "Inter", system-ui, sans-serif;
+        display: grid;
+        place-items: center;
+        min-height: 100svh;
+        padding: 16px;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* The phone-shaped story frame */
+      .stage {
+        position: relative;
+        width: min(var(--frame-w), 100vw - 24px);
+        height: min(var(--frame-h), 100svh - 24px);
+        border-radius: 22px;
+        overflow: hidden;
+        background: var(--panel);
+        box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.8),
+          0 0 0 1px rgba(246, 244, 238, 0.06);
+        user-select: none;
+      }
+
+      .slide { position: absolute; inset: 0; opacity: 0; transition: opacity 0.35s ease; }
+      .slide.active { opacity: 1; }
+
+      .bg { position: absolute; inset: 0; background-size: cover; background-position: center; }
+      .slide.active .bg { animation: kenburns 7s ease-out both; }
+      @keyframes kenburns { from { transform: scale(1.08); } to { transform: scale(1); } }
+
+      .scrim {
+        position: absolute; inset: 0;
+        background: linear-gradient(
+          180deg,
+          rgba(11, 15, 14, 0.55) 0%,
+          rgba(11, 15, 14, 0.05) 28%,
+          rgba(11, 15, 14, 0.35) 60%,
+          rgba(11, 15, 14, 0.94) 100%
+        );
+      }
+
+      /* Progress segments — the Story signature */
+      .progress {
+        position: absolute; top: 14px; left: 14px; right: 14px;
+        display: flex; gap: 5px; z-index: 6;
+      }
+      .seg { flex: 1; height: 3px; border-radius: 3px; background: rgba(246, 244, 238, 0.22); overflow: hidden; }
+      .seg > i { display: block; height: 100%; width: 0; background: var(--floodlight); }
+      .seg.done > i { width: 100%; }
+      .seg.current > i { width: var(--p, 0%); }
+
+      /* Scorebug — the broadcast lower-third, top of frame */
+      .bug {
+        position: absolute; top: 34px; left: 14px; z-index: 6;
+        display: flex; align-items: stretch; gap: 0;
+        font-family: "Oswald", sans-serif;
+        box-shadow: 0 6px 20px -8px rgba(0, 0, 0, 0.7);
+        border-radius: 7px; overflow: hidden;
+      }
+      .bug .minute {
+        background: var(--gold); color: #1a1407;
+        font-weight: 700; font-size: 19px; letter-spacing: 0.02em;
+        padding: 6px 11px; display: grid; place-items: center; min-width: 46px;
+      }
+      .bug .score {
+        background: rgba(11, 15, 14, 0.82); backdrop-filter: blur(4px);
+        padding: 6px 13px; display: flex; align-items: center; gap: 9px;
+        font-weight: 600; font-size: 16px; letter-spacing: 0.04em;
+      }
+      .bug .score .home, .bug .score .away { color: var(--chalk); }
+      .bug .score .nums { color: var(--floodlight); font-weight: 700; }
+      .bug.hidden { display: none; }
+
+      /* Lower content block */
+      .content { position: absolute; left: 22px; right: 22px; bottom: 26px; z-index: 6; }
+      .kicker {
+        font-family: "Oswald", sans-serif; font-weight: 600;
+        text-transform: uppercase; letter-spacing: 0.16em; font-size: 12px;
+        color: var(--grass); margin-bottom: 8px;
+      }
+      .headline {
+        font-family: "Oswald", sans-serif; font-weight: 700;
+        text-transform: uppercase; line-height: 0.98;
+        font-size: clamp(30px, 8vw, 44px); letter-spacing: 0.005em;
+        text-wrap: balance;
+      }
+      .caption { margin-top: 12px; font-size: 15.5px; line-height: 1.45; color: var(--floodlight); max-width: 42ch; }
+      .why {
+        margin-top: 16px; padding-top: 13px; border-top: 1px solid rgba(246, 244, 238, 0.14);
+        display: flex; gap: 9px; align-items: flex-start;
+        font-size: 12.5px; line-height: 1.4; color: var(--chalk);
+      }
+      .why .tick {
+        flex: none; margin-top: 1px; width: 16px; height: 16px; border-radius: 50%;
+        background: var(--grass); color: #06200f; display: grid; place-items: center;
+        font-size: 10px; font-weight: 700;
+      }
+      .slide.active .content { animation: rise 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+      @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+      /* Cover + info variants */
+      .slide.cover .content { bottom: 34px; }
+      .slide.cover .headline { font-size: clamp(40px, 12vw, 66px); }
+      .slide.cover .sub { margin-top: 12px; color: var(--gold); font-family: "Oswald"; letter-spacing: 0.04em; text-transform: uppercase; font-size: 14px; }
+      .slide.info .bg { background: linear-gradient(160deg, #16241b, #0b0f0e); }
+      .slide.info .content { bottom: auto; top: 50%; transform: translateY(-50%); }
+      .slide.info .body { margin-top: 14px; font-size: 15px; line-height: 1.6; color: var(--chalk); }
+
+      /* Tap zones */
+      .tap { position: absolute; top: 0; bottom: 0; width: 38%; z-index: 5; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+      .tap.left { left: 0; }
+      .tap.right { right: 0; width: 62%; }
+
+      /* Footer controls */
+      .hint {
+        position: absolute; bottom: -26px; left: 0; right: 0; text-align: center;
+        font-size: 11.5px; color: rgba(246, 244, 238, 0.4); letter-spacing: 0.04em;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .slide, .slide.active .bg, .slide.active .content { animation: none !important; transition: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="stage" id="stage" aria-label="Match story" role="group">
+      <div class="progress" id="progress"></div>
+      <div class="bug hidden" id="bug">
+        <div class="minute" id="bugMinute">0'</div>
+        <div class="score">
+          <span class="home" id="bugHome">HOME</span>
+          <span class="nums" id="bugNums">0–0</span>
+          <span class="away" id="bugAway">AWAY</span>
+        </div>
+      </div>
+      <div id="slides"></div>
+      <div class="tap left" id="tapLeft" aria-label="Previous"></div>
+      <div class="tap right" id="tapRight" aria-label="Next"></div>
+      <div class="hint">Tap sides or use ← →  ·  space to pause</div>
+    </div>
+
+    <script src="./story.data.js"></script>
+    <script>
+      (function () {
+        const story = window.STORY;
+        const slidesEl = document.getElementById("slides");
+        const progressEl = document.getElementById("progress");
+        const bug = document.getElementById("bug");
+        const DURATION = 5200;
+
+        if (!story || !Array.isArray(story.pages)) {
+          slidesEl.innerHTML =
+            '<div style="position:absolute;inset:0;display:grid;place-items:center;padding:30px;text-align:center;color:var(--chalk)">' +
+            "No story loaded. Run <b>npm run build:story</b> to generate it, then refresh.</div>";
+          return;
+        }
+
+        document.title = story.title + " — Story";
+
+        // Parse "Home H–A Away" out of the title for the scorebug labels.
+        const m = /^(.+?)\s+(\d+)[–-](\d+)\s+(.+)$/.exec(story.title || "");
+        const home = m ? m[1] : "Home";
+        const away = m ? m[4] : "Away";
+        document.getElementById("bugHome").textContent = home.toUpperCase();
+        document.getElementById("bugAway").textContent = away.toUpperCase();
+
+        // Image paths in the story are repo-root relative ("assets/.."); the
+        // viewer lives in preview/, so step up one level.
+        const fixSrc = (p) =>
+          p && p.startsWith("assets/") ? "../" + p : p || "";
+
+        // Pull the running score from a highlight caption ("Home H–A Away").
+        const scoreFrom = (text) => {
+          const r = new RegExp(home + "\\s+(\\d+)[–-](\\d+)\\s+" + away);
+          const mm = r.exec(text || "");
+          return mm ? mm[1] + "–" + mm[2] : null;
+        };
+
+        const pages = story.pages;
+        let i = 0;
+        let timer = null;
+        let start = 0;
+        let paused = false;
+        let raf = null;
+
+        // Build progress segments + slides
+        pages.forEach((p, idx) => {
+          const seg = document.createElement("div");
+          seg.className = "seg";
+          seg.innerHTML = "<i></i>";
+          progressEl.appendChild(seg);
+
+          const s = document.createElement("div");
+          s.className = "slide " + p.type;
+          const img = p.image ? fixSrc(p.image) : "";
+          s.innerHTML =
+            '<div class="bg" style="' +
+            (img ? "background-image:url('" + img + "')" : "") +
+            '"></div><div class="scrim"></div>' +
+            '<div class="content">' +
+            renderContent(p) +
+            "</div>";
+          slidesEl.appendChild(s);
+        });
+
+        function renderContent(p) {
+          if (p.type === "cover") {
+            return (
+              '<div class="kicker">Match Story</div>' +
+              '<div class="headline">' + esc(p.headline) + "</div>" +
+              (p.subheadline ? '<div class="sub">' + esc(p.subheadline) + "</div>" : "")
+            );
+          }
+          if (p.type === "info") {
+            return (
+              '<div class="kicker">Behind the Story</div>' +
+              '<div class="headline" style="font-size:clamp(26px,7vw,38px)">' + esc(p.headline) + "</div>" +
+              (p.body ? '<div class="body">' + esc(p.body) + "</div>" : "")
+            );
+          }
+          return (
+            '<div class="kicker">' + (p.minute != null ? p.minute + "&rsquo;" : "Highlight") + "</div>" +
+            '<div class="headline">' + esc(p.headline) + "</div>" +
+            (p.caption ? '<div class="caption">' + esc(p.caption) + "</div>" : "") +
+            (p.explanation
+              ? '<div class="why"><span class="tick">&#10003;</span><span>' + esc(p.explanation) + "</span></div>"
+              : "")
+          );
+        }
+
+        function esc(s) {
+          return String(s).replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+        }
+
+        const segs = [...progressEl.children];
+        const slides = [...slidesEl.children];
+
+        function updateBug(p) {
+          if (p.type !== "highlight") { bug.classList.add("hidden"); return; }
+          bug.classList.remove("hidden");
+          document.getElementById("bugMinute").textContent =
+            (p.minute != null ? p.minute : 0) + "'";
+          const sc = scoreFrom(p.caption) || "0–0";
+          document.getElementById("bugNums").textContent = sc;
+        }
+
+        function show(n) {
+          i = Math.max(0, Math.min(pages.length - 1, n));
+          slides.forEach((s, idx) => s.classList.toggle("active", idx === i));
+          segs.forEach((seg, idx) => {
+            seg.classList.toggle("done", idx < i);
+            seg.classList.toggle("current", idx === i);
+            const bar = seg.firstChild;
+            if (idx < i) bar.style.width = "100%";
+            else if (idx > i) bar.style.width = "0%";
+          });
+          updateBug(pages[i]);
+          restart();
+        }
+
+        function tick(now) {
+          if (paused) return;
+          if (!start) start = now;
+          const elapsed = now - start;
+          const pct = Math.min(100, (elapsed / DURATION) * 100);
+          const bar = segs[i] && segs[i].firstChild;
+          if (bar) bar.style.width = pct + "%";
+          if (elapsed >= DURATION) {
+            if (i < pages.length - 1) show(i + 1);
+            else paused = true; // stop at the end
+            return;
+          }
+          raf = requestAnimationFrame(tick);
+        }
+
+        function restart() {
+          start = 0;
+          cancelAnimationFrame(raf);
+          if (!paused) raf = requestAnimationFrame(tick);
+        }
+
+        function next() { if (i < pages.length - 1) show(i + 1); }
+        function prev() { show(i - 1); }
+
+        document.getElementById("tapRight").addEventListener("click", next);
+        document.getElementById("tapLeft").addEventListener("click", prev);
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "ArrowRight") next();
+          else if (e.key === "ArrowLeft") prev();
+          else if (e.key === " ") {
+            e.preventDefault();
+            paused = !paused;
+            if (!paused) restart();
+          }
+        });
+
+        show(0);
+      })();
+    </script>
+  </body>
+</html>
