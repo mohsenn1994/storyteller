@@ -3,8 +3,9 @@
  *
  * Decides which events become Story pages. Each event gets an importance weight;
  * selection is goals-first (every goal is guaranteed), then the best remaining
- * distinct moments fill up to a cap, with mirror-pair collapsing and a per-type
- * cap to keep the story varied. The result is returned in chronological order.
+ * distinct moments fill up to a cap, with mirror-pair collapsing, same-minute
+ * deduplication for saves, and a per-type cap to keep the story varied. The
+ * result is returned in chronological order.
  *
  * This is the editorial heart of the tool — see DECISIONS.md for the rationale.
  *

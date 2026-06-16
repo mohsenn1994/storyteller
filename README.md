@@ -23,9 +23,9 @@ A small, typed pipeline (`src/`):
 |-------|------|----------------|
 | load  | `load.ts` | unwrap the `messages[0].message` envelope, parse string→int, de-dup by id, sort chronologically, resolve team/player names from the squad files, derive home/away |
 | score | `score.ts` | read the running scoreline straight from comment text |
-| rank  | `rank.ts` | weight every event, guarantee all goals, fill remaining slots by importance, collapse foul/penalty mirror pairs |
+| rank  | `rank.ts` | weight every event, guarantee all goals, fill remaining slots by importance, collapse foul/penalty mirror pairs, deduplicate same-minute saves |
 | build | `build.ts` | assemble cover + highlights + info, generate deterministic captions, attach images |
-| validate | `validate.ts` | Ajv (draft 2020-12) + extra invariants |
+| validate | `validate.ts` | Zod schema validation + extra invariants |
 
 See **TECHNICAL.md** for the full engineering write-up (architecture, limitations,
 future improvements). **DECISIONS.md** has the ranking rationale and data-handling notes,
@@ -43,4 +43,4 @@ quality checks.
 - `out/story.json` — generated Story.
 - `preview/` — the Story viewer (`index.html` + generated `story.data.js`).
 - `schema/` — output schema (shipped + corrected).
-- `tests/` — Vitest suite.
+- `tests/` — Jest suite.

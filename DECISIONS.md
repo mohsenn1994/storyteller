@@ -16,6 +16,10 @@
   `free kick lost`, and a penalty emits `penalty won` + `penalty lost`, at the
   same timestamp. These are collapsed to one event (keeping the higher-weighted,
   more positive side) so one incident can't occupy two consecutive slides.
+- **Same-minute save deduplication**: multiple `attempt saved` events at the
+  same minute are deduplicated to the first by match order. They typically
+  represent one chaotic sequence (rebound, follow-up shot) rather than two
+  distinct story moments, so surfacing both produces nearly identical slides.
 
 ## Data handling (duplicates, missing fields, out-of-order minutes)
 - **Envelope**: events live at `messages[0].message`, not at the top level. The
@@ -46,8 +50,9 @@
 - **Schema fix**: the shipped `schema/story.schema.json` is unusable — it
   `require`s `pack_id` but only defines `story_id` under `properties`, while
   `additionalProperties:false` rejects anything else. Any document is therefore
-  invalid. I added `schema/story.fixed.schema.json` (require `story_id`, matching
-  the README and the defined property) and validate against it with Ajv.
+  invalid. I added `schema/story.fixed.schema.json` as a corrected reference, and
+  the equivalent rules are encoded as a Zod schema in `src/validate.ts` (which is
+  what the builder validates against).
 - Validation enforces extra invariants the schema can't: first page is a cover,
   and highlight pages are non-decreasing in minute.
 - Output is **deterministic** given a fixed `created_at` (covered by a test).
@@ -65,8 +70,9 @@
 - Momentum/clustering: detect passages of sustained pressure (several
   shots/corners in a window) and summarise them as one "info" page instead of
   several thin slides.
-- Per-type caps for variety (e.g. at most two "big save" slides) and a tie-break
-  that prefers spreading moments across both halves.
+- Per-type caps for variety (at most two "big save" slides) are implemented;
+  same-minute save deduplication is also done. A tie-break that prefers spreading
+  moments across both halves remains a future step.
 - Optional AI caption polish behind a flag, with the eval harness in EVALS.md
   gating it, plus a real image-selection step (map each goal to the photo
   nearest its minute) rather than positional assignment.
