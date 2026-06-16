@@ -1,23 +1,46 @@
-# Highlights → Stories Mini‑Builder (Tech‑agnostic Scaffold)
+# Highlights → Stories Mini-Builder
 
-**Goal:** Ingest sports match events and produce a **Story** (a JSON bundle of Pages) plus a **preview** to step through Pages.
+Ingests football match events and produces a **Story** (`out/story.json`, a JSON
+bundle of Pages) plus a **preview viewer** to step through the slides.
 
-You can implement the builder in any language as a **CLI** or **small HTTP service**. This scaffold includes:
-- A **data contract** for events.
-- A **JSON Schema** for the output story.
-- Templates for `DECISIONS.md`, `AI_USAGE.md`, and test invariants.
+Match in the sample data: **Celtic 4–0 Kilmarnock** (102 events → 10 ranked highlights).
 
-Your goal is to produce the best possible Story based summary of the game and the best possible experience for viewing that Story.
+## Quick start
+```bash
+npm install
+npm run build:story   # writes out/story.json + preview/story.data.js
+npm test              # 16 invariant + unit tests
+npm run typecheck
+```
 
-How you achieve that is up to you. The below information serves to explain what you can see in this repository that you might wish to draw on as part of the above.
+Then open `preview/index.html` in a browser (double-click works — no server
+needed; story data is injected via the generated `preview/story.data.js`).
 
-## Repository layout
-- `data/` — The raw data which you have to work with `match_events.json` here (see `data/events_schema.md`).
-- `assets/` — Images which you may wish to use in your Story JSON and Story Viewer.
-- `out/` — The output JSON files which you produce. Add `.gitkeep` to keep the folder.
-- `schema/pack.schema.json` — JSON Schema for validating the output pack.
-- `preview/` — A place to put the Story viewer which you build.
-- `tests/` - An empty tests folder which you might want to populate.
-- `templates/DECISIONS.md`, `templates/AI_USAGE.md`, `templates/EVALS.md` — Template documents you can fill in.
+## How it works
+A small, typed pipeline (`src/`):
 
-Good luck, and have fun! Keep it simple and explain your thought process clearly.
+| Stage | File | Responsibility |
+|-------|------|----------------|
+| load  | `load.ts` | unwrap the `messages[0].message` envelope, parse string→int, de-dup by id, sort chronologically, resolve team/player names from the squad files, derive home/away |
+| score | `score.ts` | read the running scoreline straight from comment text |
+| rank  | `rank.ts` | weight every event, guarantee all goals, fill remaining slots by importance, collapse foul/penalty mirror pairs |
+| build | `build.ts` | assemble cover + highlights + info, generate deterministic captions, attach images |
+| validate | `validate.ts` | Ajv (draft 2020-12) + extra invariants |
+
+See **TECHNICAL.md** for the full engineering write-up (architecture, limitations,
+future improvements). **DECISIONS.md** has the ranking rationale and data-handling notes,
+**AI_USAGE.md** for where AI was and wasn't used, and **EVALS.md** for caption
+quality checks.
+
+> Note: the shipped `schema/story.schema.json` cannot validate any document (it
+> requires `pack_id` but only defines `story_id`, with `additionalProperties:false`).
+> A corrected `schema/story.fixed.schema.json` is used instead — details in DECISIONS.md.
+
+## Layout
+- `src/` — the builder (TypeScript, run with `tsx`).
+- `data/` — raw match events + squad files.
+- `assets/` — match photos used by the Story.
+- `out/story.json` — generated Story.
+- `preview/` — the Story viewer (`index.html` + generated `story.data.js`).
+- `schema/` — output schema (shipped + corrected).
+- `tests/` — Vitest suite.
