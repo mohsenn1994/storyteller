@@ -1,11 +1,13 @@
-import { resolve } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { describe, expect, it } from '@jest/globals';
 import { buildStory } from '../src/build.js';
 import { load } from '../src/load.js';
 import { isGoal, selectHighlights, weightOf } from '../src/rank.js';
 import { parseScore } from '../src/score.js';
 import { validateStory } from '../src/validate.js';
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, '..');
 const data = load(resolve(root, 'data'));
 const story = buildStory(data, {
@@ -22,7 +24,7 @@ describe('loading', () => {
   it('orders events chronologically (kickoff first, full-time last)', () => {
     expect(data.events[0]?.type).toBe('start');
     for (let i = 1; i < data.events.length; i++) {
-      expect(data.events[i]!.order).toBeGreaterThanOrEqual(data.events[i - 1]!.order);
+      expect(data.events[i].order).toBeGreaterThanOrEqual(data.events[i - 1].order);
     }
   });
 
@@ -86,7 +88,7 @@ describe('ranking', () => {
 
 describe('story invariants', () => {
   it('passes schema validation', () => {
-    const result = validateStory(story, resolve(root, 'schema', 'story.fixed.schema.json'));
+    const result = validateStory(story);
     expect(result.errors).toEqual([]);
     expect(result.valid).toBe(true);
   });
