@@ -1,0 +1,108 @@
+{
+  "story_id": "celtic-vs-kilmarnock-2025-11-09",
+  "title": "Celtic 4–0 Kilmarnock",
+  "source": "data/match_events.json",
+  "created_at": "2025-11-09T00:00:00.000Z",
+  "metrics": {
+    "raw_events": 102,
+    "highlights": 10,
+    "goals": 4,
+    "final_score": {
+      "home": 4,
+      "away": 0
+    }
+  },
+  "pages": [
+    {
+      "type": "cover",
+      "headline": "Celtic 4–0 Kilmarnock",
+      "subheadline": "Full-time report · 10 key moments",
+      "image": "assets/21521989.jpg"
+    },
+    {
+      "type": "highlight",
+      "minute": 8,
+      "headline": "OFF THE WOODWORK",
+      "caption": "Johnny Kenny (Celtic) strikes the post. Inches from a goal. Celtic 0–0 Kilmarnock.",
+      "explanation": "Near-goals carry almost as much drama as goals — kept for tension.",
+      "image": "assets/21521990.jpg"
+    },
+    {
+      "type": "highlight",
+      "minute": 9,
+      "headline": "GOAL — Johnny Kenny",
+      "caption": "Johnny Kenny scores for Celtic. Celtic 1–0 Kilmarnock.",
+      "explanation": "Celtic edge ahead — the decisive kind of moment a match Story is built around.",
+      "image": "assets/21522003.jpg"
+    },
+    {
+      "type": "highlight",
+      "minute": 26,
+      "headline": "BIG SAVE",
+      "caption": "Sebastian Tounekti (Celtic) is denied by the keeper. Celtic 1–0 Kilmarnock.",
+      "explanation": "A save that protected the scoreline is a genuine turning point.",
+      "image": "assets/21522014.jpg"
+    },
+    {
+      "type": "highlight",
+      "minute": 28,
+      "headline": "OFF THE WOODWORK",
+      "caption": "Bruce Anderson (Kilmarnock) strikes the post. Inches from a goal. Celtic 1–0 Kilmarnock.",
+      "explanation": "Near-goals carry almost as much drama as goals — kept for tension.",
+      "image": "assets/21522057.jpg"
+    },
+    {
+      "type": "highlight",
+      "minute": 35,
+      "headline": "BIG SAVE",
+      "caption": "Scott Tiffoney (Kilmarnock) is denied by the keeper. Celtic 1–0 Kilmarnock.",
+      "explanation": "A save that protected the scoreline is a genuine turning point.",
+      "image": "assets/21522058.jpg"
+    },
+    {
+      "type": "highlight",
+      "minute": 50,
+      "headline": "GOAL — Kieran Tierney",
+      "caption": "Kieran Tierney scores for Celtic. Celtic 2–0 Kilmarnock.",
+      "explanation": "Celtic pull clear — the decisive kind of moment a match Story is built around.",
+      "image": "assets/21522071.jpg"
+    },
+    {
+      "type": "highlight",
+      "minute": 62,
+      "headline": "BOOKED",
+      "caption": "Brad Joseph Lyons (Kilmarnock) goes into the referee's book. Celtic 2–0 Kilmarnock.",
+      "explanation": "A caution that shifted the tempo or risked a player.",
+      "image": "assets/21522140.jpg"
+    },
+    {
+      "type": "highlight",
+      "minute": 84,
+      "headline": "GOAL — Daizen Maeda",
+      "caption": "Daizen Maeda scores for Celtic. Celtic 3–0 Kilmarnock.",
+      "explanation": "Celtic pull clear — the decisive kind of moment a match Story is built around.",
+      "image": "assets/21522328.jpg"
+    },
+    {
+      "type": "highlight",
+      "minute": 91,
+      "headline": "PENALTY!",
+      "caption": "Yang Hyun-Jun wins a penalty for Celtic. Celtic 3–0 Kilmarnock.",
+      "explanation": "A spot-kick award reshapes the game — high narrative value.",
+      "image": "assets/21522345.jpg"
+    },
+    {
+      "type": "highlight",
+      "minute": 92,
+      "headline": "GOAL — Arne Engels (pen)",
+      "caption": "Arne Engels scores from the penalty spot for Celtic. Celtic 4–0 Kilmarnock.",
+      "explanation": "Celtic pull clear — the decisive kind of moment a match Story is built around.",
+      "image": "assets/21522412.jpg"
+    },
+    {
+      "type": "info",
+      "headline": "How this Story was built",
+      "body": "Final score Celtic 4–0 Kilmarnock. Goals: 9' Johnny Kenny · 50' Kieran Tierney · 84' Daizen Maeda · 92' Arne Engels. 10 moments selected from 102 raw events by importance ranking."
+    }
+  ]
+}
