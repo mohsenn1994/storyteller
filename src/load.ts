@@ -106,15 +106,18 @@ function orderKey(period: number, minute: number, second: number): number {
   return periodRank * 1_000_000 + minute * 60 + second;
 }
 
+function extractEvents(raw: RawFile | null | undefined): RawEvent[] {
+  // Primary shape: { matchInfo, messages: [{ language, message: [...] }] }
+  if (raw?.messages?.[0]?.message) return raw.messages[0].message;
+  // Legacy shape: [{ message: [...] }]
+  if (Array.isArray(raw)) return (raw as Array<{ message?: RawEvent[] }>)[0]?.message ?? [];
+  // Legacy shape: { message: [...] }
+  return (raw as { message?: RawEvent[] })?.message ?? [];
+}
+
 export function load(dataDir: string): LoadedData {
   const raw = readJson<RawFile>(`${dataDir}/match_events.json`);
-  // The feed wraps events as { matchInfo, messages: [{ language, message: [] }] }.
-  // Stay defensive about older shapes ([{message}] or {message}).
-  const rawEvents: RawEvent[] =
-    raw?.messages?.[0]?.message ??
-    (Array.isArray(raw) ? raw[0]?.message : undefined) ??
-    (raw as { message?: RawEvent[] })?.message ??
-    [];
+  const rawEvents = extractEvents(raw);
 
   // Discover every "*-squad.json" in the data dir rather than hardcoding two
   // teams, so the tool works for any match from this feed without code changes.
