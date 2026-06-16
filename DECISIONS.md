@@ -57,6 +57,26 @@
   and highlight pages are non-decreasing in minute.
 - Output is **deterministic** given a fixed `created_at` (covered by a test).
 
+## Reuse across matches (how dynamic it is)
+- The tool is **data-driven across matches from the same feed provider** — no
+  code changes are needed to run a different game. Teams/players come from
+  auto-discovered `*-squad.json` files (filenames aren't hardcoded; names are
+  read from file content); home/away, title, score, and `story_id`/`created_at`
+  all derive from the data. Verified by renaming the squad files and confirming
+  the teams still resolve from their contents.
+- It intentionally does **not** adapt to a different provider's event vocabulary
+  (the `rank.ts` weights are keyed to this feed's type strings; unknown types
+  fall through to a default), non-English commentary, or the `"Home H, Away A"`
+  scoreline convention. Supporting another provider is an adapter layer.
+
+## Persistence (and why there's none)
+- The tool is intentionally **stateless**: JSON in, JSON out, fully recomputed
+  each run — no database, ORM models, or migrations, because nothing needs to be
+  stored or queried across runs. This also keeps it deterministic and easy to
+  test. A DB only becomes relevant behind a CMS (authoring, editing, scheduling,
+  versioning, or serving Stories via an API); at that point the `Story`/`Page`
+  types are the natural schema basis.
+
 ## What I would do with 2 more hours
 - **Calibrate shot ranking against industry practice.** Shots are currently
   weighted by type (miss/save/blocked/post). Opta ranks chances by Expected

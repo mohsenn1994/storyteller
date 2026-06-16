@@ -5,6 +5,13 @@ bundle of Pages) plus a **preview viewer** to step through the slides.
 
 Match in the sample data: **Celtic 4–0 Kilmarnock** (102 events → 10 ranked highlights).
 
+## Demo
+
+![Story viewer demo](docs/demo.gif)
+
+The viewer plays like a 9:16 Story: segmented progress bars, auto-advance, tap/keyboard
+navigation, and a broadcast scorebug showing the live score.
+
 ## Quick start
 ```bash
 npm install
@@ -27,10 +34,9 @@ A small, typed pipeline (`src/`):
 | build | `build.ts` | assemble cover + highlights + info, generate deterministic captions, attach images |
 | validate | `validate.ts` | Zod schema validation + extra invariants |
 
-See **TECHNICAL.md** for the full engineering write-up (architecture, limitations,
-future improvements). **DECISIONS.md** has the ranking rationale and data-handling notes,
-**AI_USAGE.md** for where AI was and wasn't used, and **EVALS.md** for caption
-quality checks.
+See **DECISIONS.md** for the ranking rationale, data-handling notes, how dynamic
+the tool is across matches, and the no-database decision; **AI_USAGE.md** for
+where AI was and wasn't used; and **EVALS.md** for caption quality checks.
 
 > Note: the shipped `schema/story.schema.json` cannot validate any document (it
 > requires `pack_id` but only defines `story_id`, with `additionalProperties:false`).
