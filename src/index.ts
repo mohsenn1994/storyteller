@@ -9,9 +9,9 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { buildStory } from './build.js';
-import { load } from './load.js';
-import { validateStory } from './validate.js';
+import { buildStory } from './build';
+import { load } from './load';
+import { validateStory } from './validate';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, '..');
@@ -20,13 +20,12 @@ function main(): void {
   const dataDir = resolve(root, 'data');
   const assetsDir = resolve(root, 'assets');
   const outPath = resolve(root, 'out', 'story.json');
-  const schemaPath = resolve(root, 'schema', 'story.fixed.schema.json');
   const viewerDataPath = resolve(root, 'preview', 'story.data.js');
 
   const data = load(dataDir);
   const story = buildStory(data, { maxHighlights: 10, assetsDir });
 
-  const result = validateStory(story, schemaPath);
+  const result = validateStory(story);
   if (!result.valid) {
     console.error('✗ Story failed validation:');
     for (const e of result.errors) console.error('  -', e);

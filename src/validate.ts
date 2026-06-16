@@ -1,16 +1,47 @@
 /**
  * Stage 5 of the pipeline: VALIDATE.
  *
- * Checks the assembled Story against the (corrected) JSON Schema using Ajv, plus
- * a few invariants the schema cannot express on its own: the first page must be
- * a cover, and highlight pages must be in non-decreasing minute order.
+ * Checks the assembled Story against a Zod schema, plus a few invariants the
+ * schema cannot express: the first page must be a cover, and highlight pages
+ * must be in non-decreasing minute order.
  *
  * Pipeline: load -> score -> rank -> build -> [validate]
  */
-import Ajv from 'ajv/dist/2020.js';
-import addFormats from 'ajv-formats';
-import { readFileSync } from 'node:fs';
+import { z } from 'zod';
 import type { Story } from './types.js';
+
+const CoverPageSchema = z.looseObject({
+  type: z.literal('cover'),
+  headline: z.string(),
+  subheadline: z.string().optional(),
+  image: z.string(),
+});
+
+const HighlightPageSchema = z.looseObject({
+  type: z.literal('highlight'),
+  minute: z.number().int().min(0).max(130),
+  headline: z.string(),
+  caption: z.string(),
+  image: z.string().optional(),
+  explanation: z.string().optional(),
+});
+
+const InfoPageSchema = z.looseObject({
+  type: z.literal('info'),
+  headline: z.string(),
+  body: z.string().optional(),
+});
+
+const StorySchema = z.strictObject({
+  story_id: z.string().min(1),
+  title: z.string().min(1),
+  source: z.string().min(1),
+  created_at: z.iso.datetime(),
+  metrics: z.record(z.string(), z.unknown()).optional(),
+  pages: z
+    .array(z.discriminatedUnion('type', [CoverPageSchema, HighlightPageSchema, InfoPageSchema]))
+    .min(1),
+});
 
 export interface ValidationResult {
   valid: boolean;
@@ -18,17 +49,14 @@ export interface ValidationResult {
 }
 
 /** Schema validation plus a few invariants the schema alone can't express. */
-export function validateStory(story: Story, schemaPath: string): ValidationResult {
-  const ajv = new Ajv({ allErrors: true });
-  addFormats(ajv);
-  const schema = JSON.parse(readFileSync(schemaPath, 'utf-8'));
-  const validate = ajv.compile(schema);
-  const valid = validate(story);
-
+export function validateStory(story: Story): ValidationResult {
+  const result = StorySchema.safeParse(story);
   const errors: string[] = [];
-  if (!valid) {
-    for (const e of validate.errors ?? []) {
-      errors.push(`${e.instancePath || '/'} ${e.message ?? ''}`.trim());
+
+  if (!result.success) {
+    for (const issue of result.error.issues) {
+      const path = issue.path.join('.') || '/';
+      errors.push(`${path} ${issue.message}`);
     }
   }
 
